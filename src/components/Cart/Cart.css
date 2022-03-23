@@ -1,0 +1,47 @@
+.summary-body {
+  padding: 20px 0px;
+  position: sticky;
+  top: 0;
+}
+.summary-title {
+  font-size: large;
+  font-weight: 600;
+  text-align: center;
+}
+.summary-total {
+  font-weight: 500;
+}
+.summary-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: medium;
+  width: 100%;
+  margin: 10px 0px;
+  background-color: rgb(252, 50, 50);
+  border: none;
+  color: white;
+  border-radius: 5px;
+}
+.summary-clear-btn:hover {
+  cursor: pointer;
+  box-shadow: 0px 3px 5px #888888;
+}
+.summary-review-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: medium;
+  width: 100%;
+  background-color: orange;
+  border: none;
+  color: white;
+  border-radius: 5px;
+}
+.summary-review-btn:hover {
+  cursor: pointer;
+  box-shadow: 0px 3px 5px #888888;
+}
+.marginRight {
+  margin-right: 10px;
+}

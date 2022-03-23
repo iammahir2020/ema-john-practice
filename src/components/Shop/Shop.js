@@ -1,8 +1,8 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
 import Product from '../Product/Product';
 import './Shop.css'
+import Cart from '../Cart/Cart';
+import { addToDB,getStoredCart,removeFromDB } from '../../utilities/fakeDataBase';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -12,30 +12,38 @@ const Shop = () => {
         .then(res=>res.json())
         .then(data=>setProducts(data))
     },[])
+    useEffect(()=>{
+        const storedCart = getStoredCart();
+        // console.log(storedCart)
+        const cartProducts = [];
+        for(const id in storedCart){
+            const foundproduct = products.find(product=>product.id===id);
+            if(foundproduct){
+                foundproduct.quantity = storedCart[id];
+                cartProducts.push(foundproduct);
+            }
+        }
+        // console.log(cartProducts)
+        setCartItems(cartProducts)
+    },[products])
     const addToCart =(product) =>{
-        const newCartItems = [...cartItems,product];
+        let newCartItems =[];
+        const exists = cartItems.find(item=>item.id===product.id);
+        if(!exists){
+            product.quantity = 1;
+            newCartItems = [...cartItems,product];
+        }else{
+            const rest = cartItems.filter(item=>item.id!== product.id);
+            exists.quantity = exists.quantity + 1;
+            newCartItems = [...rest,exists];
+        }
         setCartItems(newCartItems)
-        console.log(newCartItems)
+        addToDB(product.id)
     }
     const clearCart = ()=>{
         setCartItems([])
+        removeFromDB()
     }
-    const reducer = (previous, current)=>{
-        return previous + current.price;
-    }
-    const total  = cartItems.reduce(reducer,0);
-    let shippingCharge;
-    if(total===0){
-        shippingCharge=0;
-    }else if(total>0 && total<1000){
-        shippingCharge=30;
-    }else if(total>1000 && total<5000){
-        shippingCharge=20;
-    }else{
-        shippingCharge=10;
-    }
-    const tax = ((total+shippingCharge)*.15).toFixed(2);
-    const grandTotal = total+shippingCharge+parseFloat(tax);
     return (
         <div className='shop-container' >
             <div className='products-container' >
@@ -48,20 +56,9 @@ const Shop = () => {
                 }
             </div>
             <div className='summary-container' >
-                <p className='summary-title' >Order Summary</p>
-                <p><small>Selected Items: {cartItems.length}</small></p>
-                <p><small>Total Price: ${total}</small></p>
-                <p><small>Total Shipping Charge: ${shippingCharge}</small></p>
-                <p><small>Tax: ${tax}</small></p>
-                <p className='summary-total' >Grand Total: ${grandTotal}</p>
-                <button onClick={clearCart} className='summary-clear-btn' >
-                    <p className='marginRight' >Clear Cart</p>
-                    <FontAwesomeIcon icon={faTrashCan}/>
-                </button><br />
-                <button className='summary-review-btn' >
-                    <p className='marginRight' >Review Order</p>
-                    <FontAwesomeIcon icon={faArrowRight}/>
-                </button>
+                <Cart 
+                cartItems = {cartItems}
+                clearCart = {clearCart} ></Cart>
             </div>
         </div>
     );
